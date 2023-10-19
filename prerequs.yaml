@@ -21,6 +21,7 @@
         - bash-completion
         - lorax
         - python3
+        - firewall-cmd
 
     - name: Enable osbuild-composer.socket
       systemd:
