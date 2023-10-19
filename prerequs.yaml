@@ -1,6 +1,6 @@
 ---
 - name: Update dnf, Install Packages, and Enable osbuild-composer.socket
-  hosts: imagebuilders
+  hosts: imagebuilder
   become: yes
   tasks:
     - name: Update dnf
