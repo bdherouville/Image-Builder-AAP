@@ -26,3 +26,7 @@
         name: osbuild-composer.socket
         state: started
         enabled: yes
+    - name: Open port 9090 in the firewall
+      firewalld:
+        service: 9090 
+        state: enabled
