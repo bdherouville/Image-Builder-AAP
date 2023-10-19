@@ -1,0 +1,28 @@
+---
+- name: Update dnf, Install Packages, and Enable osbuild-composer.socket
+  hosts: your_target_host
+  become: yes
+  tasks:
+    - name: Update dnf
+      dnf:
+        name: '*'
+        state: latest
+      register: dnf_update_result
+
+    - name: Install required packages
+      dnf:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - git
+        - osbuild-composer
+        - composer-cli
+        - cockpit-composer
+        - bash-completion
+        - lorax
+
+    - name: Enable osbuild-composer.socket
+      systemd:
+        name: osbuild-composer.socket
+        state: started
+        enabled: yes
