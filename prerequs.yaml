@@ -20,6 +20,7 @@
         - cockpit-composer
         - bash-completion
         - lorax
+        - python3
 
     - name: Enable osbuild-composer.socket
       systemd:
