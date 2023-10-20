@@ -20,8 +20,7 @@
         - cockpit-composer
         - bash-completion
         - lorax
-        - python3
-        - firewall-cmd
+
 
     - name: Enable osbuild-composer.socket
       systemd:
@@ -29,6 +28,8 @@
         state: started
         enabled: yes
 
-    - name: Open port 9090 in the firewall
-      shell: firewall-cmd --zone=public --add-port=9090/tcp --permanent
-      when: ansible_os_family == 'RedHat'
+    - name: Enable cockpit.socket
+      systemd:
+        name: cockpit.socket
+        state: started
+        enabled: yes
