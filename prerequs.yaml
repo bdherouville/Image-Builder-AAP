@@ -21,7 +21,12 @@
         - bash-completion
         - lorax
 
-
+    - name: Add cloud-user to the weldr group
+      user:
+        name: cloud-user
+        groups: weldr
+        append: yes
+        
     - name: Enable osbuild-composer.socket
       systemd:
         name: osbuild-composer.socket
