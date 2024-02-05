@@ -4,6 +4,6 @@
   become: true
 
   tasks:
-    - name: Utiliser l'ID du compose
+    - name: Afficher l'ID du compose depuis le cache de faits
       debug:
-        msg: "L'ID du compose à utiliser est {{ [imagebuilders]['compose_id'] }}"
+        var: hostvars[inventory_hostname]['compose_id'] | default('Variable compose_id non définie')
