@@ -1,6 +1,6 @@
 ---
 - name: Exécuter la commande "composer-cli compose start-ostree --ref rhel/8/x86_64/edge kiosk edge-commit"
-  hosts: nom_de_votre_groupe_d'hôtes
+  hosts: all
   become: true  # Utilisez "become: true" si une élévation des privilèges est nécessaire
 
   tasks:
