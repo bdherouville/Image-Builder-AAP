@@ -6,4 +6,4 @@
   tasks:
     - name: Utiliser l'ID du compose
       debug:
-        msg: "L'ID du compose à utiliser est {{ ['compose_id'] }}"
+        msg: "L'ID du compose à utiliser est {{ [imagebuilders]['compose_id'] }}"
