@@ -23,4 +23,4 @@
 
     - name: Afficher l'ID du compose
       debug:
-        var: [imagebuilders]['compose_id']
+        var: "{{ [imagebuilders]['compose_id'] }}"
