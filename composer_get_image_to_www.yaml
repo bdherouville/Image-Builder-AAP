@@ -1,0 +1,9 @@
+
+- name: Exemple d'utilisation de l'ID dans un autre playbook
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Utiliser l'ID du compose
+      debug:
+        msg: "L'ID du compose à utiliser est {{ hostvars[inventory_hostname]['compose_id'] }}"
