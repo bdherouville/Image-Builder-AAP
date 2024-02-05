@@ -1,6 +1,6 @@
 ---
 - name: Exécuter la commande "composer-cli compose image list"
-  hosts: 
+  hosts: all
   become: true  # Utilisez "become: true" si une élévation des privilèges est nécessaire
 
   tasks:
