@@ -1,11 +1,11 @@
 ---
-- name: Exécuter la commande "composer-cli compose image list"
+- name: Exécuter la commande "composer-cli compose list"
   hosts: all
   become: true  # Utilisez "become: true" si une élévation des privilèges est nécessaire
 
   tasks:
-    - name: Exécuter la commande "composer-cli compose image list"
-      command: "composer-cli compose image list"
+    - name: Exécuter la commande "composer-cli compose list"
+      command: "composer-cli compose list"
       register: output  # Enregistrez la sortie de la commande dans une variable
 
     - name: Afficher la sortie de la commande
