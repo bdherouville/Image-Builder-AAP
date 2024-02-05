@@ -6,4 +6,4 @@
   tasks:
     - name: Afficher l'ID du compose depuis le cache de faits
       debug:
-        var: hostvars[inventory_hostname]['compose_id'] | default('Variable compose_id non définie')
+        var: hostvars[imagebuilders]['compose_id'] | default('Variable compose_id non définie')
