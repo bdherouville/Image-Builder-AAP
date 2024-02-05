@@ -20,3 +20,7 @@
     - name: Afficher l'ID du compose
       debug:
         var: compose_id
+
+    - name: Afficher l'ID du compose
+      debug:
+        var: [imagebuilders]['compose_id']
