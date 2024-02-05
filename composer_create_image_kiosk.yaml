@@ -7,6 +7,8 @@
     - name: Exécuter la commande "composer-cli compose start-ostree --ref rhel/8/x86_64/edge kiosk edge-commit"
       command: "composer-cli compose start-ostree --ref rhel/8/x86_64/edge kiosk edge-commit"
       register: output  # Enregistrez la sortie de la commande dans une variable
+
+    - name: Afficher la sortie de la commande
       debug:
         var: output.stdout_lines
       
