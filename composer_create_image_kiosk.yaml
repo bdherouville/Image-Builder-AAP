@@ -15,6 +15,7 @@
     - name: Extraire l'ID du compose
       set_fact:
         compose_id: "{{ output.stdout_lines[0] | regex_replace('.*Compose ([^ ]*) added to the queue.*', '\\1') }}"
+        cacheable: true
 
     - name: Afficher l'ID du compose
       debug:
