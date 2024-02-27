@@ -30,10 +30,6 @@
             msg: "Failed to retrieve status for compose {{ ostree_kiosk_build.stdout }}"
           when: compose_status == 'RUNNING' and ostree_kiosk_build.stdout not in result.stdout
 
-        - name: Wait for a while before next check
-          ansible.builtin.pause:
-            seconds: 30  # Adjust the delay as needed
-          when: compose_status == 'RUNNING'
       until: compose_status != 'RUNNING'
       retries: 300  # Adjust based on the maximum number of attempts you want to make
       delay: 5  # No initial delay before the first attempt
