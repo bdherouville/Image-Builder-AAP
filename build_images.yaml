@@ -13,6 +13,37 @@
       register: ostree_kiosk_build
       changed_when: true
 
+    - name: Wait for compose status to change from RUNNING
+      block:
+        - name: Check compose status
+          ansible.builtin.shell: "composer-cli compose status | grep {{ ostree_kiosk_build.stdout }}"
+          register: result
+          changed_when: false  # Ensure this task does not report 'changed'
+
+        - name: Set compose status from result
+          set_fact:
+            compose_status: "{{ result.stdout | regex_search('(\\S+)$', '\\1') | default('RUNNING') }}"
+          when: {{ ostree_kiosk_build.stdout }} in result.stdout
+
+        - name: Fail if compose status is unknown
+          ansible.builtin.fail:
+            msg: "Failed to retrieve status for compose {{ ostree_kiosk_build.stdout }}"
+          when: compose_status == 'RUNNING' and {{ ostree_kiosk_build.stdout }} not in result.stdout
+
+        - name: Wait for a while before next check
+          ansible.builtin.pause:
+            seconds: 30  # Adjust the delay as needed
+          when: compose_status == 'RUNNING'
+      until: compose_status != 'RUNNING'
+      retries: 300  # Adjust based on the maximum number of attempts you want to make
+      delay: 5  # No initial delay before the first attempt
+
+    - name: Execute tasks when compose is no longer RUNNING
+      ansible.builtin.debug:
+        msg: "Compose {{ ostree_kiosk_build.stdout }} status is now {{ compose_status }}"
+      # Replace this debug task with the actual tasks you want to execute when status is not RUNNING
+
+
     - name: Execute 'composer-cli compose image' with the obtained BUILDID
       ansible.builtin.shell: "{{ composer_cli_path }} compose image {{ ostree_kiosk_build.stdout }}"
       changed_when: true
