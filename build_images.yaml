@@ -9,7 +9,7 @@
 
   tasks:
     - name: Start OSTree compose for 'kiosk' and get BUILDID
-      ansible.builtin.shell: "{{ composer_cli_path }} compose start-ostree --ref 'rhel/9/$(uname -m)/edge' kiosk edge-container | awk '{print $2}'"
+      ansible.builtin.shell: "{{ composer_cli_path }} composer-cli compose start-ostree --url http://localhost:8085/repo/ --ref "rhel/9/$(uname -m)/edge" kiosk-installer edge-installer | awk '{print $2}'"
       register: ostree_kiosk_build
       changed_when: true
 
