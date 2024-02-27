@@ -22,11 +22,18 @@
 
         - name: Set compose status from result
           set_fact:
-            compose_status: "{{ composer-cli compose status | grep {{ ostree_kiosk_build.stdout }} | awk '{print $2}' }}"
+            compose_status: "{{ composer-cli compose status | grep {{ ostree_kiosk_build.stdout }} | awk '{print $2}'}}"
           when: ostree_kiosk_build.stdout in result.stdout
           until: compose_status != 'RUNNING'
           retries: 300  # Adjust based on the maximum number of attempts you want to make
           delay: 5  # No initial delay before the first attempt
+
+    - name: Validate if the file is present
+      shell:  composer-cli compose status | grep {{ ostree_kiosk_build.stdout }} | awk '{print $2}'
+      register: status
+      until: "FINISHED"
+      retries: 10
+      delay: 10
 
     - name: Execute tasks when compose is no longer RUNNING
       ansible.builtin.debug:
