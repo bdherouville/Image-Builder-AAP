@@ -23,12 +23,12 @@
         - name: Set compose status from result
           set_fact:
             compose_status: "{{ result.stdout | regex_search('(\\S+)$', '\\1') | default('RUNNING') }}"
-          when: {{ ostree_kiosk_build.stdout }} in result.stdout
+          when: ostree_kiosk_build.stdout in result.stdout
 
         - name: Fail if compose status is unknown
           ansible.builtin.fail:
             msg: "Failed to retrieve status for compose {{ ostree_kiosk_build.stdout }}"
-          when: compose_status == 'RUNNING' and {{ ostree_kiosk_build.stdout }} not in result.stdout
+          when: compose_status == 'RUNNING' and ostree_kiosk_build.stdout not in result.stdout
 
         - name: Wait for a while before next check
           ansible.builtin.pause:
