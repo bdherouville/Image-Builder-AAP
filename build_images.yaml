@@ -13,20 +13,9 @@
       register: ostree_kiosk_build
       changed_when: true
 
-    - name: Wait for compose status to change from RUNNING
-      block:
-        - name: Check compose status
-          ansible.builtin.shell: "composer-cli compose status | grep {{ ostree_kiosk_build.stdout }}"
-          register: result
-          changed_when: false  # Ensure this task does not report 'changed'
-
-        - name: Set compose status from result
-          ansible.builtin.shell: "{{ composer_cli_path }} compose status | grep {{ ostree_kiosk_build.stdout }} | awk '{print $2}'"
-          register: compose_result
-          when: '"RUNNING" in compose_result.stdout'
-          until: compose_status != 'RUNNING'
-          retries: 300  # Adjust based on the maximum number of attempts you want to make
-          delay: 5  # No initial delay before the first attempt
+    - name: Pause for 5 minutes to build app cache
+      ansible.builtin.pause:
+      minutes: 10
 
 
     - name: Execute tasks when compose is no longer RUNNING
