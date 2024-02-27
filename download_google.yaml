@@ -1,0 +1,21 @@
+---
+- name: Download Google Chrome
+  hosts: all
+  become: no  # Required if you need to place the file in a system directory
+  vars:
+    download_url: 'https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm'  # Replace with the actual download URL
+    destination_directory: '~/red-hat-kiosk/chrome_repackage'  # Replace with your actual directory path
+    destination_file: 'google-chrome-stable_current_x86_64.rpm'  # The name of the file after being downloaded
+
+  tasks:
+    - name: Ensure the destination directory exists
+      ansible.builtin.file:
+        path: "{{ destination_directory }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download Google Chrome installation package
+      ansible.builtin.get_url:
+        url: "{{ download_url }}"
+        dest: "{{ destination_directory }}/{{ destination_file }}"
+        mode: '0644'
