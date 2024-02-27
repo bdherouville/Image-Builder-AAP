@@ -15,7 +15,7 @@
 
     - name: Pause for 5 minutes to build app cache
       ansible.builtin.pause:
-      minutes: 10
+        minutes: 10
 
 
     - name: Execute tasks when compose is no longer RUNNING
