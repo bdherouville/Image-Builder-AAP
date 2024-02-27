@@ -1,7 +1,6 @@
 ---
 - name: Clone repository and push kiosk.toml to Image Builder
   hosts: all
-  become: not  # Required for installing packages and pushing blueprints
   vars:
     repo_url: "https://github.com/bdherouville/red-hat-kiosk.git"  # Replace <REPOSITORY_URL> with the actual repository URL
     destination_path: "~/"  # Replace with the path where the repository should be cloned
