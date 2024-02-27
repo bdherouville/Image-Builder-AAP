@@ -1,0 +1,57 @@
+---
+- name: Create kiosk image
+  hosts: all
+  become: no
+  vars:
+    composer_cli_path: "/usr/bin/composer-cli"  # Adjust if composer-cli is located elsewhere
+    podman_path: "/usr/bin/podman"  # Adjust if Podman is located elsewhere
+    mkksiso_path: "/usr/bin/mkksiso"  # Adjust if mkksiso is located elsewhere
+
+  tasks:
+    - name: Start OSTree compose for 'kiosk' and get BUILDID
+      ansible.builtin.shell: "{{ composer_cli_path }} compose start-ostree --ref 'rhel/9/$(uname -m)/edge' kiosk edge-container | awk '{print $2}'"
+      register: ostree_kiosk_build
+      changed_when: true
+
+    - name: Execute 'composer-cli compose image' with the obtained BUILDID
+      ansible.builtin.shell: "{{ composer_cli_path }} compose image {{ ostree_kiosk_build.stdout }}"
+      changed_when: true
+
+    - name: Load the container image into Podman and get IMAGEID
+      ansible.builtin.shell: "cat < './{{ ostree_kiosk_build.stdout }}-container.tar' | {{ podman_path }} load | grep -o -P '(?<=sha256[@:])[a-z0-9]*'"
+      register: podman_load
+      changed_when: true
+
+    - name: Run the container image in Podman
+      ansible.builtin.shell: "{{ podman_path }} run -d --name=kiosk-server -p 8085:8080 {{ podman_load.stdout }}"
+      changed_when: true
+
+    - name: Create kiosk-installer TOML file
+      ansible.builtin.copy:
+        dest: "./kiosk-installer.toml"
+        content: |
+          name = "kiosk-installer"
+
+          description = ""
+          version = "0.0.0"
+          modules = []
+          groups = []
+          packages = []
+        mode: '0644'
+
+    - name: Push the 'kiosk-installer' blueprint
+      ansible.builtin.shell: "{{ composer_cli_path }} blueprints push kiosk-installer.toml"
+      changed_when: true
+
+    - name: Start OSTree compose for 'kiosk-installer' and get BUILDID
+      ansible.builtin.shell: "{{ composer_cli_path }} compose start-ostree --url http://localhost:8085/repo/ --ref 'rhel/9/$(uname -m)/edge' kiosk-installer edge-installer | awk '{print $2}'"
+      register: ostree_kiosk_installer_build
+      changed_when: true
+
+    - name: Execute 'composer-cli compose image' for the new BUILDID
+      ansible.builtin.shell: "{{ composer_cli_path }} compose image {{ ostree_kiosk_installer_build.stdout }}"
+      changed_when: true
+
+    - name: Create installer ISO using mkksiso
+      ansible.builtin.shell: "{{ mkksiso_path }} kiosk.ks {{ ostree_kiosk_installer_build.stdout }}-installer.iso install.iso"
+      changed_when: true

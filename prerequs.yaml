@@ -1,13 +1,28 @@
 ---
-- name: Update dnf, Install Packages, and Enable osbuild-composer.socket
+- name: Check and install necessary Red Hat repos & packages
   hosts: all
-  become: yes
+  become: yes  # Necessary for installing packages
   tasks:
     - name: Update dnf
       dnf:
         name: '*'
         state: latest
       register: dnf_update_result
+      
+    - name: Get the system architecture
+      ansible.builtin.command: "{{ architecture_command }}"
+      register: system_arch
+      changed_when: false  # Avoid reporting 'changed' status unnecessarily
+
+    - name: Enable CodeReady Builder repository
+      ansible.builtin.command:
+        cmd: "subscription-manager repos --enable codeready-builder-for-rhel-9-{{ system_arch.stdout }}-rpms"
+      when: system_arch.stdout != ""  # Run only if the architecture is identified
+
+    - name: Install EPEL release package via dnf
+      ansible.builtin.command:
+        cmd: "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y"
+      when: system_arch.stdout != ""  # Ensure command runs only if architecture is identified
 
     - name: Install required packages
       dnf:
@@ -21,6 +36,8 @@
         - bash-completion
         - lorax
         - containernetworking-plugins
+        - rpmrebuild  # Tool for rebuilding RPM packages
+        - rpm-build    # The RPM Package Manager build tool
 
     - name: Add cloud-user to the weldr group
       user:
@@ -39,3 +56,4 @@
         name: cockpit.socket
         state: started
         enabled: yes
+

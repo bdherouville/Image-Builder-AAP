@@ -1,9 +1,0 @@
-
-- name: Exemple d'utilisation de l'ID dans un autre playbook
-  hosts: all
-  become: true
-
-  tasks:
-    - name: Afficher l'ID du compose depuis le cache de faits
-      debug:
-        msg: {{ imagebuilders.compose_id }}
