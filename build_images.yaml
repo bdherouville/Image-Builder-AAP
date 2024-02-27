@@ -22,7 +22,7 @@
 
         - name: Set compose status from result
           set_fact:
-            compose_status: "{{ composer-cli compose status | regex_search('(\\S+)$', '\\1') | default('RUNNING') }}"
+            compose_status: "{{ composer-cli compose status | grep {{ ostree_kiosk_build.stdout }} | awk '{print $2}' }}"
           when: ostree_kiosk_build.stdout in result.stdout
           until: compose_status != 'RUNNING'
           retries: 300  # Adjust based on the maximum number of attempts you want to make
