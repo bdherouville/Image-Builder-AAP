@@ -16,7 +16,6 @@
           rhsm = true
         mode: '0644' # Sets the file permission
 
----
 - name: Create fast-datapath toml file
   hosts: all
   tasks:
@@ -34,7 +33,6 @@
           rhsm = true
         mode: '0644' # Sets the file permission
 
----
 - name: Install TOML sources using composer-cli
   hosts: all
   become: yes  # This is required to execute commands as sudo
@@ -51,7 +49,6 @@
       register: fast_datapath_source_add
       failed_when: fast_datapath_source_add.stderr != '' and 'exists and is the same' not in fast_datapath_source_add.stderr
 
----
 - name: Verify installed repositories
   hosts: all
   become: yes  # Required to run commands as sudo
