@@ -1,0 +1,72 @@
+---
+- name: Create rhocp toml file
+  hosts: all
+  tasks:
+    - name: Create the rhocp-4.14.toml file
+      ansible.builtin.copy:
+        dest: "/tmp/rhocp-4.14.toml" # You can change this to the desired path
+        content: |
+          id = "rhocp-4.14"
+          name = "Red Hat OpenShift Container Platform 4.14 for RHEL 9"
+          type = "yum-baseurl"
+          url = "https://cdn.redhat.com/content/dist/layered/rhel9/{{ ansible_architecture }}/rhocp/4.14/os"
+          check_gpg = true
+          check_ssl = true
+          system = false
+          rhsm = true
+        mode: '0644' # Sets the file permission
+
+---
+- name: Create fast-datapath toml file
+  hosts: all
+  tasks:
+    - name: Create the fast-datapath.toml file
+      ansible.builtin.copy:
+        dest: "/tmp/fast-datapath.toml" # You can change this to the desired path
+        content: |
+          id = "fast-datapath"
+          name = "Fast Datapath for RHEL 9"
+          type = "yum-baseurl"
+          url = "https://cdn.redhat.com/content/dist/layered/rhel9/{{ ansible_architecture }}/fast-datapath/os"
+          check_gpg = true
+          check_ssl = true
+          system = false
+          rhsm = true
+        mode: '0644' # Sets the file permission
+
+---
+- name: Install TOML sources using composer-cli
+  hosts: all
+  become: yes  # This is required to execute commands as sudo
+  tasks:
+    - name: Add source rhocp-4.14.toml to composer-cli
+      ansible.builtin.command:
+        cmd: composer-cli sources add /tmp/rhocp-4.14.toml
+      register: rhocp_source_add
+      failed_when: rhocp_source_add.stderr != '' and 'exists and is the same' not in rhocp_source_add.stderr
+
+    - name: Add source fast-datapath.toml to composer-cli
+      ansible.builtin.command:
+        cmd: composer-cli sources add /tmp/fast-datapath.toml
+      register: fast_datapath_source_add
+      failed_when: fast_datapath_source_add.stderr != '' and 'exists and is the same' not in fast_datapath_source_add.stderr
+
+---
+- name: Verify installed repositories
+  hosts: all
+  become: yes  # Required to run commands as sudo
+  tasks:
+    - name: List sources using composer-cli
+      ansible.builtin.command:
+        cmd: composer-cli sources list
+      register: source_list  # Stores the output of the command
+
+    - name: Check if 'fast-datapath' source is installed
+      ansible.builtin.fail:
+        msg: "'fast-datapath' source is not installed"
+      when: "'fast-datapath' not in source_list.stdout"
+
+    - name: Check if 'rhocp-4.14' source is installed
+      ansible.builtin.fail:
+        msg: "'rhocp-4.14' source is not installed"
+      when: "'rhocp-4.14' not in source_list.stdout"
