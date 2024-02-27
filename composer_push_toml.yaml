@@ -1,13 +1,20 @@
 ---
-- name: Exécuter la commande "composer-cli blueprints push kiosk.toml"
+- name: Clone repository and push kiosk.toml to Image Builder
   hosts: all
-  become: true  # Utilisez "become: true" si une élévation des privilèges est nécessaire
-
+  become: not  # Required for installing packages and pushing blueprints
+  vars:
+    repo_url: "https://github.com/bdherouville/red-hat-kiosk.git"  # Replace <REPOSITORY_URL> with the actual repository URL
+    destination_path: "~/"  # Replace with the path where the repository should be cloned
+    kiosk_file_path: "~/red-hat-kiosk/imagebuilder/kiosk.toml"  # Adjust based on actual destination_path
   tasks:
-    - name: Exécuter la commande "composer-cli blueprints push kiosk.toml"
-      command: "composer-cli blueprints push kiosk.toml"
-      register: output  # Enregistrez la sortie de la commande dans une variable
+    - name: Clone the specified repository
+      ansible.builtin.git:
+        repo: "{{ repo_url }}"
+        dest: "{{ destination_path }}"
+        clone: yes
+        update: yes
 
-    - name: Afficher la sortie de la commande
-      debug:
-        var: output.stdout_lines
+    - name: Push kiosk.toml to Image Builder
+      ansible.builtin.command:
+        cmd: "composer-cli blueprints push {{ kiosk_file_path }}"
+      become: yes  # Ensure this command is run with superuser privileges
