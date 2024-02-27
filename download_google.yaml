@@ -17,5 +17,5 @@
     - name: Download Google Chrome installation package
       ansible.builtin.get_url:
         url: "{{ download_url }}"
-        dest: "{{ destination_file }}"
+        dest: "{{ destination_directory }}" / "{{ destination_file }}"
         mode: '0644'
