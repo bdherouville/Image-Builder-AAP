@@ -23,7 +23,7 @@
         - name: Set compose status from result
           ansible.builtin.shell: "{{ composer_cli_path }} compose status | grep {{ ostree_kiosk_build.stdout }} | awk '{print $2}'"
           register: compose_result
-          when: 'RUNNING' in compose_result.stdout
+          when: "RUNNING" in compose_result.stdout
           until: compose_status != 'RUNNING'
           retries: 300  # Adjust based on the maximum number of attempts you want to make
           delay: 5  # No initial delay before the first attempt
