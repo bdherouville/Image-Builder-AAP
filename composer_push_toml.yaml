@@ -3,7 +3,7 @@
   hosts: all
   vars:
     repo_url: "https://github.com/bdherouville/red-hat-kiosk.git"  # Replace <REPOSITORY_URL> with the actual repository URL
-    destination_path: "~/"  # Replace with the path where the repository should be cloned
+    destination_path: "~/red-hat-kiosk"  # Replace with the path where the repository should be cloned
     kiosk_file_path: "~/red-hat-kiosk/imagebuilder/kiosk.toml"  # Adjust based on actual destination_path
   tasks:
     - name: Clone the specified repository
