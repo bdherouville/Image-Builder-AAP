@@ -1,0 +1,8 @@
+- name: Install EPEL repository
+  hosts: all
+  become: yes  # Necessary for installing packages and configuring repositories
+  tasks:
+    - name: Install EPEL release package
+      ansible.builtin.yum:
+        name: epel-release
+        state: present
