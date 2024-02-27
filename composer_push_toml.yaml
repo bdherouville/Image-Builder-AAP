@@ -16,4 +16,3 @@
     - name: Push kiosk.toml to Image Builder
       ansible.builtin.command:
         cmd: "composer-cli blueprints push {{ kiosk_file_path }}"
-      become: yes  # Ensure this command is run with superuser privileges
