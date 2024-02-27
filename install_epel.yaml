@@ -1,8 +1,21 @@
-- name: Install EPEL repository
+---
+- name: Enable CodeReady Builder, Install EPEL repository via dnf
   hosts: all
-  become: yes  # Necessary for installing packages and configuring repositories
+  become: yes  # Necessary for managing repositories and installing packages
+  vars:
+    architecture_command: "uname -m"  # Command to get the system architecture
   tasks:
-    - name: Install EPEL release package
-      ansible.builtin.yum:
-        name: epel-release
-        state: present
+    - name: Get the system architecture
+      ansible.builtin.command: "{{ architecture_command }}"
+      register: system_arch
+      changed_when: false  # Avoid reporting 'changed' status unnecessarily
+
+    - name: Enable CodeReady Builder repository
+      ansible.builtin.command:
+        cmd: "subscription-manager repos --enable codeready-builder-for-rhel-9-{{ system_arch.stdout }}-rpms"
+      when: system_arch.stdout != ""  # Run only if the architecture is identified
+
+    - name: Install EPEL release package via dnf
+      ansible.builtin.command:
+        cmd: "dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm -y"
+      when: system_arch.stdout != ""  # Ensure command runs only if architecture is identified
